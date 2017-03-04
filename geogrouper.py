@@ -1,5 +1,5 @@
-# Step 1, get the words in paranthesis
 import re
+from utils import is_uppercase, is_lowercase
 
 def get_potential_acronyms(abstract_text):
     """
@@ -27,15 +27,6 @@ def get_potential_acronyms(abstract_text):
             all_potential_acronyms.add(text)
 
     return all_potential_acronyms
-
-
-def is_uppercase(character):
-    return 'A' <= character <= 'Z'
-
-def is_lowercase(character):
-    return 'a' <= character <= 'z'
-
-
 
 
 def get_valid_acronyms(potential_acronyms, data_description_text_list):
