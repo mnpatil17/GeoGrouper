@@ -4,6 +4,11 @@ from collections import defaultdict
 
 MAX_ACRONYM_LENGTH = 2
 
+def cluster_descriptions(abstract_text, data_description_text_list):
+    potential_acronyms = get_potential_acronyms(abstract_text)
+    final_acronyms = get_valid_acronyms(potential_acronyms, data_description_text_list)
+    return dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
+
 def get_potential_acronyms(abstract_text):
     """
     This function returns a list of all the acronyms from the text of the abstract paragraph.
