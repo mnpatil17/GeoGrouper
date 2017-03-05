@@ -1,13 +1,27 @@
+#
+# geogrouper.py
+#
+
 import re, string
 from utils import is_majority_uppercase
 from collections import defaultdict
 
 MAX_ACRONYM_LENGTH = 2
 
+## TODO: handle the case where one acronym is a substring of another acronym! (i.e. mRNA and RNA)
 def cluster_descriptions(abstract_text, data_description_text_list):
+    """
+    Clusters the descriptions of the samples corresponding to a particular abstract based on the
+    acronyms corresponding to them.
+
+    :param: abstract_text - The text in the abstract
+    :param: data_description_text_list - A list of descriptions for each sample
+    :return: a dictionary mapping a tuple (the acronym category) to lists of sample description text
+    """
     potential_acronyms = get_potential_acronyms(abstract_text)
     final_acronyms = get_valid_acronyms(potential_acronyms, data_description_text_list)
     return dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
+
 
 def get_potential_acronyms(abstract_text):
     """
@@ -59,6 +73,13 @@ def get_valid_acronyms(potential_acronyms, data_description_text_list):
 
 
 def group_descriptions_by_acronyms(acronyms, data_description_text_list):
+    """
+    Given the acronyms, groups the sample descriptions based on them.
+
+    :param: acronyms - A set of acronyms (strings)
+    :param: data_description_text_list - A list of descriptions for each sample
+    :return: a dictionary mapping a tuple (the acronym category) to lists of sample description text
+    """
     desc_dict = {}
     for desc_text in data_description_text_list:
         acronyms_found_set = set()
@@ -66,7 +87,10 @@ def group_descriptions_by_acronyms(acronyms, data_description_text_list):
             if acronym in desc_text:
                 acronyms_found_set.add(acronym)
 
-        desc_dict[desc_text] = tuple(sorted(acronyms_found_set))
+        if len(acronyms_found_set) == 0:
+            desc_dict[desc_text] = tuple()
+        else:
+            desc_dict[desc_text] = tuple(sorted(acronyms_found_set))
 
     category_dict = defaultdict(list)
     all_categories = desc_dict.values()
@@ -77,10 +101,13 @@ def group_descriptions_by_acronyms(acronyms, data_description_text_list):
     return category_dict
 
 
+#
+# For debugging
+#
 if __name__ == '__main__':
 
-    # one test
-    abs_text = 'this is some (abstract) text that I have written. Here is tRNA an acronym (NASA) and N.A.S.A.'
+    abs_text = 'this is some (abstract) text that I have written. Here is tRNA an acronym' + \
+               '(NASA) and N.A.S.A.'
     desc1 = 'this is from N.A.S.A.'
     desc2 = 'this is tRNA'
     desc3 = 'this is tRNA and N.A.S.A. 1'
@@ -91,6 +118,5 @@ if __name__ == '__main__':
     final_acronyms = get_valid_acronyms(potential_acronyms, desc_list)
     print 'Potential acronyms: {0}'.format(potential_acronyms)
     print 'Final acronyms: {0}'.format(final_acronyms)
-    print '\n'
-    print group_descriptions_by_acronyms(final_acronyms, desc_list)
+    print 'Final grouping: {0}', group_descriptions_by_acronyms(final_acronyms, desc_list)
 

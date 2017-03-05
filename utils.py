@@ -1,5 +1,6 @@
 #
-# Various Utility Functions
+# Various utility functions
+# utils.py
 #
 
 
@@ -18,6 +19,15 @@ def is_lowercase(character):
 
 
 def is_majority_uppercase(text, tie_ok=False):
+    """
+    Checks if a piece of text (string) is majority uppercase. Non-letters are not considered
+    uppercase or lowercase (i.e. they are left out of the math entirely).
+
+    :param: text - The string to check for majority uppercase status
+    :param: tie_ok - If true, allows for a non-strict majority (i.e. equal number of uppercase
+                     and lowercase string). If false, requires a strict majority.
+    :return: true if there is a majority (strict or non-strict, as defined by tie_ok). Else, false.
+    """
     num_uppercase, num_lowercase = 0, 0
     for character in text:
         if is_uppercase(character):
