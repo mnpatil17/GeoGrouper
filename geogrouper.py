@@ -1,5 +1,6 @@
 import re, string
 from utils import is_majority_uppercase
+from collections import defaultdict
 
 MAX_ACRONYM_LENGTH = 2
 
@@ -7,12 +8,12 @@ def get_potential_acronyms(abstract_text):
     """
     This function returns a list of all the acronyms from the text of the abstract paragraph.
 
-    A 'potential acronym'
+    A 'potential acronym' is defined as a majority uppercase string of length at least
+    MAX_ACRONYM_LENGTH
 
     :param: abstract_text - The text of the abstract
+    :return: a set of potential acronyms
     """
-    # TODO: what about common acronyms, like tRNA, or mRNA, that everyone knows? They probably won't be in parenthesis
-
 
     all_abstract_text_words = re.sub('\(|\)', '', abstract_text).split(' ')
     all_paren_strings = re.findall('(?<=\()[^\(\)]*(?=\))', abstract_text) # does not include parens
@@ -31,8 +32,6 @@ def get_potential_acronyms(abstract_text):
 
     return all_potential_acronyms
 
-
-# TODO: get out the descriptions, combinatorially classified.
 
 def get_valid_acronyms(potential_acronyms, data_description_text_list):
     """
@@ -54,15 +53,39 @@ def get_valid_acronyms(potential_acronyms, data_description_text_list):
     return acronyms_found
 
 
+def group_descriptions_by_acronyms(acronyms, data_description_text_list):
+    desc_dict = {}
+    for desc_text in data_description_text_list:
+        acronyms_found_set = set()
+        for acronym in acronyms:
+            if acronym in desc_text:
+                acronyms_found_set.add(acronym)
+
+        desc_dict[desc_text] = tuple(sorted(acronyms_found_set))
+
+    category_dict = defaultdict(list)
+    all_categories = desc_dict.values()
+    for desc_text, category in desc_dict.items():
+        category_dict[category].append(desc_text)
+
+
+    return category_dict
+
+
 if __name__ == '__main__':
 
     # one test
     abs_text = 'this is some (abstract) text that I have written. Here is tRNA an acronym (NASA) and N.A.S.A.'
     desc1 = 'this is from N.A.S.A.'
     desc2 = 'this is tRNA'
-    desc_list = [desc1, desc2]
+    desc3 = 'this is tRNA and N.A.S.A. 1'
+    desc4 = 'this is tRNA and N.A.S.A. 2'
+    desc_list = [desc1, desc2, desc3, desc4]
 
     potential_acronyms = get_potential_acronyms(abs_text)
     final_acronyms = get_valid_acronyms(potential_acronyms, desc_list)
     print 'Potential acronyms: {0}'.format(potential_acronyms)
     print 'Final acronyms: {0}'.format(final_acronyms)
+    print '\n'
+    print group_descriptions_by_acronyms(final_acronyms, desc_list)
+
