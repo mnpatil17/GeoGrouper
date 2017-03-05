@@ -1,33 +1,38 @@
-import re
-from utils import is_uppercase, is_lowercase
+import re, string
+from utils import is_majority_uppercase
+
+MAX_ACRONYM_LENGTH = 2
 
 def get_potential_acronyms(abstract_text):
     """
     This function returns a list of all the acronyms from the text of the abstract paragraph.
+
+    A 'potential acronym'
 
     :param: abstract_text - The text of the abstract
     """
     # TODO: what about common acronyms, like tRNA, or mRNA, that everyone knows? They probably won't be in parenthesis
 
 
-    all_paren_strings = re.findall('(?<=\()[^\(\)]*(?=\))', abstract_text)  # does not include parens
+    all_abstract_text_words = re.sub('\(|\)', '', abstract_text).split(' ')
+    all_paren_strings = re.findall('(?<=\()[^\(\)]*(?=\))', abstract_text) # does not include parens
 
     # To qualify as a potential acronym, we say that the string has to be majority uppercase
     all_potential_acronyms = set()
     for text in all_paren_strings:
-        num_uppercase = 0
-        num_lowercase = 0
-        for character in text:
-            if is_uppercase(character):
-                num_uppercase += 1
-            elif is_lowercase(character):
-                num_lowercase += 1
-
-        if num_uppercase >= num_lowercase:
+        if is_majority_uppercase(text):
             all_potential_acronyms.add(text)
+
+    # deal with the rest of the words
+    for word in all_abstract_text_words:
+        striped_word = word.strip(string.punctuation)
+        if len(striped_word) > MAX_ACRONYM_LENGTH and is_majority_uppercase(striped_word):
+            all_potential_acronyms.add(striped_word)
 
     return all_potential_acronyms
 
+
+# TODO: get out the descriptions, combinatorially classified.
 
 def get_valid_acronyms(potential_acronyms, data_description_text_list):
     """
@@ -40,7 +45,7 @@ def get_valid_acronyms(potential_acronyms, data_description_text_list):
 
     for desc_text in data_description_text_list:
         for acronym in potential_acronyms:
-            if acronym in desc_text:
+            if acronym.lower() in desc_text.lower():
                 acronyms_found.add(acronym)
 
         if len(acronyms_found) == len(potential_acronyms):
@@ -52,8 +57,8 @@ def get_valid_acronyms(potential_acronyms, data_description_text_list):
 if __name__ == '__main__':
 
     # one test
-    abs_text = 'this is some (abstract) text that I have written. Here is an acronym (NASA) and (N.A.S.A.s) and (tRNA).'
-    desc1 = 'this is from NASA'
+    abs_text = 'this is some (abstract) text that I have written. Here is tRNA an acronym (NASA) and N.A.S.A.'
+    desc1 = 'this is from N.A.S.A.'
     desc2 = 'this is tRNA'
     desc_list = [desc1, desc2]
 
