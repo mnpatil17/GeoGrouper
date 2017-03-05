@@ -4,13 +4,13 @@ Groups Geo data by clustering based on acronyms
 ### Current Status
 
 - [x] Basic acronym clustering algorithm
-	[x] Planning
-	[x] Algorithm
-	[x] Tests
+	- [x] Planning
+	- [x] Algorithm
+	- [x] Tests
 - [ ] Handling numbers and replicates
-	[ ] Planning
-	[ ] Algorithm
-	[ ] Tests
+	- [ ] Planning
+	- [ ] Algorithm
+	- [ ] Tests
 - [ ] Integration with GeoPy
 
 
