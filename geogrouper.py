@@ -11,7 +11,7 @@ import numpy as np
 
 
 MAX_ACRONYM_LENGTH = 2
-MCL_INFLATE_FACTOR = 3   # This is a high constant because MCL deals with a fully-connected graph
+MCL_INFLATE_FACTOR = 4   # This is a high constant because MCL deals with a fully-connected graph
 MCL_MAX_LOOP = 100       # MCL Max Loop
 
 ## TODO: handle the case where one acronym is a substring of another acronym! (i.e. mRNA and RNA)
@@ -64,7 +64,7 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
             current_cluster.append(data_description_ids[desc_index])
         labeled_clusters.append(current_cluster)
 
-    return labeled_clusters
+    return labeled_clusters, mtx
 
 
     ## ORIGINAL IMPLEMENTATION
@@ -158,6 +158,8 @@ if __name__ == '__main__':
 
     # TODO: might have to edit-distance cluster within acronym groupings to allow for cases like
     #       DNA and RNA having only an edit distance of 1, even tho they're different
+
+    # TODO: need to adjust MCL_INFLATE_FACTOR based on the variance of the matches
 
     # abs_text = 'this is some (abstract) text that I have written. Here is tRNA an acronym' + \
     #            '(NASA) and N.A.S.A.'
