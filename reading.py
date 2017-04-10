@@ -1,11 +1,5 @@
-
-
 import pandas as pd
 from geogrouper import cluster_descriptions
-
-
-
-
 
 # Example Data Manipulations
 

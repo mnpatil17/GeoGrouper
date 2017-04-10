@@ -3,6 +3,8 @@
 # utils.py
 #
 
+import edit_distance
+
 
 def is_uppercase(character):
     """
@@ -36,3 +38,18 @@ def is_majority_uppercase(text, tie_ok=False):
             num_lowercase += 1
 
     return num_uppercase + int(tie_ok) > num_lowercase
+
+
+def string_edit_dist(str1, str2):
+    """
+    The raw number of MISMATCHES
+    """
+    sm = edit_distance.SequenceMatcher(a=str1, b=str2)
+    return sm.distance()
+
+def string_match_ratio(str1, str2):
+    """
+    The ratio of MATCHES.
+    """
+    sm = edit_distance.SequenceMatcher(a=str1, b=str2)
+    return sm.ratio()
