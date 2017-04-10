@@ -43,13 +43,9 @@ def get_all_series(data_table):
 
 
 if __name__ == '__main__':
-    table = pd.read_table('../all_meta.txt', index_col=0)
-    temp_series_id = 'GSE63726'
-    abstract = get_abstract_for_series(table, temp_series_id)
+    table = pd.read_table('../all_meta.txt', index_col=0, low_memory=False)
+    temp_series_id = 'GSE64520'
     temp_sample_ids, all_sample_titles = get_all_sample_titles_for_series(table, temp_series_id)
-    print cluster_descriptions(abstract, all_sample_titles)
-
-    # TODO: switch to an eedit distance model.
-
-
+    for cluster in cluster_descriptions(all_sample_titles, all_sample_titles):
+        print cluster, '\n'
 

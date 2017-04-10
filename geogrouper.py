@@ -11,6 +11,8 @@ import numpy as np
 
 
 MAX_ACRONYM_LENGTH = 2
+MCL_INFLATE_FACTOR = 3   # This is a high constant because MCL deals with a fully-connected graph
+MCL_MAX_LOOP = 100       # MCL Max Loop
 
 ## TODO: handle the case where one acronym is a substring of another acronym! (i.e. mRNA and RNA)
 def cluster_descriptions(data_description_ids, data_description_text_list):
@@ -43,18 +45,27 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
                 mtx[i].append(0.0)
 
     mtx = np.array(mtx)
-    print '\n\n-- MATRIX --\n', mtx
 
-
-    ## NOTICE
-    ## You're going to need a high inflation constant! This is because you have a fully connected
-    ## graph and you don't want to have that stuff go down.
+    ## DEBUG
+    # print '\n\n-- MATRIX --\n', mtx
 
     # Execute MCL clustering
-    M, clusters = mcl(mtx, inflate_factor = 3, max_loop = 100)
+    M, clusters = mcl(mtx, inflate_factor=MCL_INFLATE_FACTOR, max_loop=MCL_MAX_LOOP)
 
-    print '\n\n-- FINAL MATRIX --\n', M
-    print '\n\n-- CLUSTERS --\n', clusters
+    ## DEBUG
+    # print '\n\n-- FINAL MATRIX --\n', M
+    # print '\n\n-- CLUSTERS --\n', clusters
+
+    # Label all the clusters
+    labeled_clusters = []
+    for cluster, description_indices in clusters.items():
+        current_cluster = []
+        for desc_index in description_indices:
+            current_cluster.append(data_description_ids[desc_index])
+        labeled_clusters.append(current_cluster)
+
+    return labeled_clusters
+
 
     ## ORIGINAL IMPLEMENTATION
     # potential_acronyms = get_potential_acronyms(abstract_text)
@@ -158,8 +169,6 @@ if __name__ == '__main__':
     desc6 = 'RNA_7_HC'
     desc_list = [desc1, desc2, desc3, desc4, desc5, desc6]
     desc_ids = ['desc1', 'desc2', 'desc3', 'desc4', 'desc5', 'desc6']
-
-
     cluster_descriptions(desc_ids, desc_list)
 
     # potential_acronyms = get_potential_acronyms(abs_text)
