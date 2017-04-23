@@ -3,11 +3,12 @@
 #
 
 import re, string
-from utils import is_majority_uppercase, string_edit_dist, string_match_ratio
+from utils import is_majority_uppercase, string_edit_dist, string_match_ratio, word_count
 from collections import defaultdict
 from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
 import numpy as np
+import operator
 
 
 MAX_ACRONYM_LENGTH = 2
@@ -24,6 +25,8 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
     :param: data_description_text_list - A list of descriptions for each sample
     :return: a dictionary mapping a tuple (the acronym category) to lists of sample description text
     """
+
+    # TODO: use the keywords
 
 
     # Calculate and store all pairwise edit distances
@@ -68,9 +71,11 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
 
 
     ## ORIGINAL IMPLEMENTATION
-    # potential_acronyms = get_potential_acronyms(abstract_text)
-    # final_acronyms = get_valid_acronyms(potential_acronyms, data_description_text_list)
-    # return dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
+def cluster_groups(abstract_text, data_description_text_list):
+    potential_acronyms = get_potential_acronyms(abstract_text)
+    final_acronyms = get_valid_acronyms(potential_acronyms, data_description_text_list)
+    final_clusters = dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
+    return final_clusters.values()
 
 
 def get_potential_acronyms(abstract_text):
@@ -122,6 +127,16 @@ def get_valid_acronyms(potential_acronyms, data_description_text_list):
     return acronyms_found
 
 
+def get_keywords(data_description_text_list):
+    processed_description_text_list = []
+    for text in data_description_text_list:
+        processed_description_text_list.append(desc_text.replace('_', ' '))
+
+    all_text = ' '.join(processed_description_text_list)
+    counts = word_count(all_text)
+    return sorted(counts.items(), key=operator.itemgetter(1))
+
+
 def group_descriptions_by_acronyms(acronyms, data_description_text_list):
     """
     Given the acronyms, groups the sample descriptions based on them.
@@ -130,11 +145,15 @@ def group_descriptions_by_acronyms(acronyms, data_description_text_list):
     :param: data_description_text_list - A list of descriptions for each sample
     :return: a dictionary mapping a tuple (the acronym category) to lists of sample description text
     """
+
+    # split on camel case, split on
+
     desc_dict = {}
     for desc_text in data_description_text_list:
+        filtered_desc_text = desc_text.replace('_', ' ')
         acronyms_found_set = set()
         for acronym in acronyms:
-            if acronym in desc_text:
+            if acronym in filtered_desc_text:
                 acronyms_found_set.add(acronym)
 
         if len(acronyms_found_set) == 0:

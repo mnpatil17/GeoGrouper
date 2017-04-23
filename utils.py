@@ -53,3 +53,15 @@ def string_match_ratio(str1, str2):
     """
     sm = edit_distance.SequenceMatcher(a=str1, b=str2)
     return sm.ratio()
+
+
+def word_count(input_str):
+    counts = dict()
+    words = input_str.split()
+    for word in words:
+        if word in counts:
+            counts[word] += 1
+        else:
+            counts[word] = 1
+
+    return counts

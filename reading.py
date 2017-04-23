@@ -1,5 +1,5 @@
 import pandas as pd
-from geogrouper import cluster_descriptions
+from geogrouper import cluster_descriptions, cluster_groups
 
 # Example Data Manipulations
 
@@ -59,13 +59,14 @@ if __name__ == '__main__':
 
     for series_id in get_all_series_ids(table):
         sample_ids, all_sample_titles = get_all_sample_titles_for_series(table, series_id)
+        sample_abstract = get_abstract_for_series(table, series_id)
 
         print '-------------------------------------------------------------------------\n'
         print 'SERIES: {0}'.format(series_id)
         print 'NUM SAMPLES: {0}\n\n'.format(len(all_sample_titles))
 
         if len(all_sample_titles) > 5:
-            cluster_desc, org_mtx = cluster_descriptions(all_sample_titles, all_sample_titles)
+            cluster_desc = cluster_groups(sample_abstract, all_sample_titles)
             for cluster in cluster_desc:
                 print cluster
                 # print 'Min: {0}, Max: {1}'.format(min(), max())
