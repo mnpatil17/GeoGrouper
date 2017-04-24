@@ -66,7 +66,7 @@ if __name__ == '__main__':
             print 'SERIES: {0}'.format(series_id)
             print 'NUM SAMPLES: {0}\n\n'.format(len(all_sample_titles))
 
-            groups = cluster_descriptions(all_sample_titles, all_sample_titles)[0]
+            groups = cluster_descriptions(all_sample_titles, sample_abstract)[0]
             final_clusters = groups
             # final_clusters = []
             # for group in groups:

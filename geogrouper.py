@@ -3,20 +3,20 @@
 #
 
 import re, string
-from utils import is_majority_uppercase, string_edit_dist, string_match_ratio, word_count, remove_numbers
+from utils import is_majority_uppercase, string_edit_dist, string_match_ratio, word_count, remove_numbers, scientific_match_ratio
 from collections import defaultdict
 from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
+from acronyms import get_acronyms, get_keywords, get_numberless_acronyms
 import numpy as np
 import operator
 
 
-MAX_ACRONYM_LENGTH = 2
 MCL_INFLATE_FACTOR = 7   # This is a high constant because MCL deals with a fully-connected graph
 MCL_MAX_LOOP = 100       # MCL Max Loop
 
 ## TODO: handle the case where one acronym is a substring of another acronym! (i.e. mRNA and RNA)
-def cluster_descriptions(data_description_ids, data_description_text_list):
+def cluster_descriptions(data_description_text_list, abstract_text, data_description_ids=None):
     """
     Clusters the descriptions of the samples corresponding to a particular abstract based on the
     acronyms corresponding to them.
@@ -33,14 +33,36 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
     #       25% of the number of text, then it should be eliminated
 
 
+    if data_description_ids == None:
+        data_description_ids = data_description_text_list
+
+
+    # Filters in the following way:
+    # 1. Removes numbers
+    # 2. Converts '_' to ' '
+    # 3. Strips leading and trailing spaces
+    filtered_data_desc_text_list = []
+    for text in data_description_text_list:
+        filtered_data_desc_text_list.append(remove_numbers(text).replace('_', ' ').strip())
+
+    keywords = get_numberless_acronyms(abstract_text, filtered_data_desc_text_list)
+    print keywords
+
     # Calculate and store all pairwise edit distances
     match_ratio_dict = {}
     for desc1, desc2 in combinations(data_description_text_list, 2):
-        desc1_numberless = remove_numbers(desc1)
-        desc2_numberless = remove_numbers(desc2)
-        match_ratio = string_match_ratio(desc1_numberless, desc2_numberless)
-        if desc1 == 'KUa113' and desc2 == 'KUa164':
-            print "MATCH: ", match_ratio
+
+        # use acronyms for now
+        # desc1_numberless = remove_numbers(desc1)
+        # desc2_numberless = remove_numbers(desc2)
+        # match_ratio = string_match_ratio(desc1_numberless, desc2_numberless)
+
+        match_ratio = scientific_match_ratio(desc1, desc2, keywords)
+        # print "Match Ratio: {0} and {1} is {2}".format(desc1, desc2, match_ratio)
+
+
+        # if desc1 == 'KUa113' and desc2 == 'KUa164':
+        #     print "MATCH: ", match_ratio
         key = tuple(sorted([desc1, desc2]))
         match_ratio_dict[key] = match_ratio
 
@@ -82,59 +104,9 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
 
     ## ORIGINAL IMPLEMENTATION
 def cluster_groups(abstract_text, data_description_text_list):
-    potential_acronyms = get_potential_acronyms(abstract_text)
-    final_acronyms = get_valid_acronyms(potential_acronyms, data_description_text_list)
+    final_acronyms = get_acronyms(abstract_text, data_description_text_list)
     final_clusters = dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
     return final_clusters.values()
-
-
-def get_potential_acronyms(abstract_text):
-    """
-    This function returns a list of all the acronyms from the text of the abstract paragraph.
-
-    A 'potential acronym' is defined as a majority uppercase string of length at least
-    MAX_ACRONYM_LENGTH
-
-    :param: abstract_text - The text of the abstract
-    :return: a set of potential acronyms
-    """
-
-    all_abstract_text_words = re.sub('\(|\)', '', abstract_text).split(' ')
-    all_paren_strings = re.findall('(?<=\()[^\(\)]*(?=\))', abstract_text) # does not include parens
-
-    # To qualify as a potential acronym, we say that the string has to be majority uppercase
-    all_potential_acronyms = set()
-    for text in all_paren_strings:
-        if is_majority_uppercase(text):
-            all_potential_acronyms.add(text)
-
-    # deal with the rest of the words
-    for word in all_abstract_text_words:
-        striped_word = word.strip(string.punctuation)
-        if len(striped_word) > MAX_ACRONYM_LENGTH and is_majority_uppercase(striped_word):
-            all_potential_acronyms.add(striped_word)
-
-    return all_potential_acronyms
-
-
-def get_valid_acronyms(potential_acronyms, data_description_text_list):
-    """
-    :param: potential_acronyms - A list of potential acronyms (strings)
-    :param: data_description_text_list - A list of descriptions for each sample
-
-    :return: a set of valid acronyms
-    """
-    acronyms_found = set()
-
-    for desc_text in data_description_text_list:
-        for acronym in potential_acronyms:
-            if acronym.lower() in desc_text.lower():
-                acronyms_found.add(acronym)
-
-        if len(acronyms_found) == len(potential_acronyms):
-            return acronyms_found
-
-    return acronyms_found
 
 
 def get_keywords(data_description_text_list):

@@ -47,12 +47,54 @@ def string_edit_dist(str1, str2):
     sm = edit_distance.SequenceMatcher(a=str1, b=str2)
     return sm.distance()
 
+def string_num_matches(str1, str2):
+    """
+    The raw number of MISMATCHES
+    """
+    sm = edit_distance.SequenceMatcher(a=str1, b=str2)
+    return sm.matches()
+
+
 def string_match_ratio(str1, str2):
     """
     The ratio of MATCHES.
     """
     sm = edit_distance.SequenceMatcher(a=str1, b=str2)
     return sm.ratio()
+
+def scientific_match_ratio(str1, str2, keywords):
+    """
+    Note the keywords may just be acronyms
+    """
+
+    # Get rid of the numbers
+    str1_numberless = remove_numbers(str1)
+    str2_numberless = remove_numbers(str2)
+
+    str1_keywords, str1_remainder = get_keywords_in_description(str1_numberless, keywords)
+    str2_keywords, str2_remainder = get_keywords_in_description(str2_numberless, keywords)
+
+    remainder_dist = string_num_matches(str1_remainder, str2_remainder)
+    common_keywords = str1_keywords.intersection(str2_keywords)
+
+    common_keyword_total_len = 0
+    for common_kword in common_keywords:
+        common_keyword_total_len += len(common_kword)
+
+    return (remainder_dist + common_keyword_total_len) * 1.0 / max(len(str1_numberless), len(str2_numberless))
+
+
+def get_keywords_in_description(text, keywords):
+    """
+    """
+    text_copy = str(text)
+    text_keywords = set()
+    for keyword in keywords:
+        if keyword in text_copy:
+            text_keywords.add(keyword)
+            text_copy = text_copy.replace(keyword, '', 1).strip()
+
+    return text_keywords, text_copy
 
 
 def word_count(input_str):
