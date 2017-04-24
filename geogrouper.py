@@ -3,7 +3,7 @@
 #
 
 import re, string
-from utils import is_majority_uppercase, string_edit_dist, string_match_ratio, word_count
+from utils import is_majority_uppercase, string_edit_dist, string_match_ratio, word_count, remove_numbers
 from collections import defaultdict
 from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
@@ -12,7 +12,7 @@ import operator
 
 
 MAX_ACRONYM_LENGTH = 2
-MCL_INFLATE_FACTOR = 4   # This is a high constant because MCL deals with a fully-connected graph
+MCL_INFLATE_FACTOR = 7   # This is a high constant because MCL deals with a fully-connected graph
 MCL_MAX_LOOP = 100       # MCL Max Loop
 
 ## TODO: handle the case where one acronym is a substring of another acronym! (i.e. mRNA and RNA)
@@ -27,12 +27,20 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
     """
 
     # TODO: use the keywords
+    # TODO: ignore the numbers
+    # TODO: keyword weighted distance
+    # TODO: do it many times at different MCL_INFLATE_FACTOR values. If something has more than
+    #       25% of the number of text, then it should be eliminated
 
 
     # Calculate and store all pairwise edit distances
     match_ratio_dict = {}
     for desc1, desc2 in combinations(data_description_text_list, 2):
-        match_ratio = string_match_ratio(desc1, desc2)
+        desc1_numberless = remove_numbers(desc1)
+        desc2_numberless = remove_numbers(desc2)
+        match_ratio = string_match_ratio(desc1_numberless, desc2_numberless)
+        if desc1 == 'KUa113' and desc2 == 'KUa164':
+            print "MATCH: ", match_ratio
         key = tuple(sorted([desc1, desc2]))
         match_ratio_dict[key] = match_ratio
 
@@ -49,6 +57,8 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
 
     mtx = np.array(mtx)
 
+    # print mtx
+
     ## DEBUG
     # print '\n\n-- MATRIX --\n', mtx
 
@@ -60,12 +70,12 @@ def cluster_descriptions(data_description_ids, data_description_text_list):
     # print '\n\n-- CLUSTERS --\n', clusters
 
     # Label all the clusters
-    labeled_clusters = []
+    labeled_clusters = set()
     for cluster, description_indices in clusters.items():
         current_cluster = []
         for desc_index in description_indices:
             current_cluster.append(data_description_ids[desc_index])
-        labeled_clusters.append(current_cluster)
+        labeled_clusters.add(tuple(current_cluster))
 
     return labeled_clusters, mtx
 

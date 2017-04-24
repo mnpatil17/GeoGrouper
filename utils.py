@@ -65,3 +65,6 @@ def word_count(input_str):
             counts[word] = 1
 
     return counts
+
+def remove_numbers(text):
+    return ''.join([i for i in text if not i.isdigit()])

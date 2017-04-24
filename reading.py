@@ -61,15 +61,26 @@ if __name__ == '__main__':
         sample_ids, all_sample_titles = get_all_sample_titles_for_series(table, series_id)
         sample_abstract = get_abstract_for_series(table, series_id)
 
-        print '-------------------------------------------------------------------------\n'
-        print 'SERIES: {0}'.format(series_id)
-        print 'NUM SAMPLES: {0}\n\n'.format(len(all_sample_titles))
-
         if len(all_sample_titles) > 5:
-            cluster_desc = cluster_groups(sample_abstract, all_sample_titles)
-            for cluster in cluster_desc:
+            print '-------------------------------------------------------------------------\n'
+            print 'SERIES: {0}'.format(series_id)
+            print 'NUM SAMPLES: {0}\n\n'.format(len(all_sample_titles))
+
+            groups = cluster_descriptions(all_sample_titles, all_sample_titles)[0]
+            final_clusters = groups
+            # final_clusters = []
+            # for group in groups:
+            #     final_clusters.extend(cluster_groups(sample_abstract, group))
+
+
+            # groups = cluster_groups(sample_abstract, all_sample_titles)
+            # final_clusters = []
+            # for group in groups:
+            #     final_clusters.extend(cluster_descriptions(group, group)[0])
+
+            for cluster in final_clusters:
                 print cluster
                 # print 'Min: {0}, Max: {1}'.format(min(), max())
-        else:
-            print 'Insufficient samples to process this.'
+        # else:
+        #     print 'Insufficient samples to process this.'
 
