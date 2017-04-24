@@ -89,6 +89,11 @@ def get_keywords_in_description(text, keywords):
     """
     text_copy = str(text)
     text_keywords = set()
+
+    if len(keywords) == 0:
+        return set(), text_copy
+    keywords.sort(key=len, reverse=True)
+
     for keyword in keywords:
         if keyword in text_copy:
             text_keywords.add(keyword)

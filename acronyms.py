@@ -2,7 +2,7 @@
 # acronyms.py #
 ###############
 
-import re, string
+import re, string, operator
 from utils import is_majority_uppercase, word_count, remove_numbers
 
 MAX_ACRONYM_LENGTH = 2
@@ -32,11 +32,11 @@ def get_keywords(data_description_text_list):
     # 2. Removes all numbers from the text
     processed_description_text_list = []
     for text in data_description_text_list:
-        processed_description_text_list.append(remove_numbers(desc_text.replace('_', ' ')))
+        processed_description_text_list.append(remove_numbers(text.replace('_', ' ')).strip())
 
     all_text = ' '.join(processed_description_text_list)
     counts = word_count(all_text)
-    return sorted(counts.items(), key=operator.itemgetter(1))
+    return [text for text, count in sorted(counts.items(), key=operator.itemgetter(1))[::-1]]
 
 
 #

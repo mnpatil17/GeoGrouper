@@ -9,7 +9,6 @@ from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
 from acronyms import get_acronyms, get_keywords, get_numberless_acronyms
 import numpy as np
-import operator
 
 
 MCL_INFLATE_FACTOR = 7   # This is a high constant because MCL deals with a fully-connected graph
@@ -46,6 +45,7 @@ def cluster_descriptions(data_description_text_list, abstract_text, data_descrip
         filtered_data_desc_text_list.append(remove_numbers(text).replace('_', ' ').strip())
 
     keywords = get_numberless_acronyms(abstract_text, filtered_data_desc_text_list)
+    # keywords = get_keywords(data_description_text_list)
     print keywords
 
     # Calculate and store all pairwise edit distances
@@ -107,16 +107,6 @@ def cluster_groups(abstract_text, data_description_text_list):
     final_acronyms = get_acronyms(abstract_text, data_description_text_list)
     final_clusters = dict(group_descriptions_by_acronyms(final_acronyms, data_description_text_list))
     return final_clusters.values()
-
-
-def get_keywords(data_description_text_list):
-    processed_description_text_list = []
-    for text in data_description_text_list:
-        processed_description_text_list.append(desc_text.replace('_', ' '))
-
-    all_text = ' '.join(processed_description_text_list)
-    counts = word_count(all_text)
-    return sorted(counts.items(), key=operator.itemgetter(1))
 
 
 def group_descriptions_by_acronyms(acronyms, data_description_text_list):
