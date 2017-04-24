@@ -46,7 +46,7 @@ def cluster_descriptions(data_description_text_list, abstract_text, data_descrip
 
     keywords = get_numberless_acronyms(abstract_text, filtered_data_desc_text_list)
     # keywords = get_keywords(data_description_text_list)
-    print keywords
+    print "KEYWORDS: ", keywords
 
     # Calculate and store all pairwise edit distances
     match_ratio_dict = {}
@@ -85,7 +85,13 @@ def cluster_descriptions(data_description_text_list, abstract_text, data_descrip
     # print '\n\n-- MATRIX --\n', mtx
 
     # Execute MCL clustering
-    M, clusters = mcl(mtx, inflate_factor=MCL_INFLATE_FACTOR, max_loop=MCL_MAX_LOOP)
+    inflate_factor = MCL_INFLATE_FACTOR
+    num_clusters = len(data_description_text_list)
+    while num_clusters == len(data_description_text_list) or inflate_factor == 1:
+        M, clusters = mcl(mtx, inflate_factor=inflate_factor, max_loop=MCL_MAX_LOOP)
+        num_clusters = len(clusters)
+        inflate_factor -= 1
+
 
     ## DEBUG
     # print '\n\n-- FINAL MATRIX --\n', M
