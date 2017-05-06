@@ -2,7 +2,9 @@
 # geogrouper.py
 #
 
+import pandas as pd
 import re, string
+from geo_io import get_all_series_ids, get_all_sample_titles_for_series, get_abstract_for_series
 from utils import scientific_match_ratio, sanitize_sample_descriptions
 from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
@@ -13,6 +15,43 @@ import numpy as np
 MCL_INFLATE_FACTOR = 7      # This is a high constant because MCL deals with a fully-connected graph
 MIN_MCL_INFLATE_FACTOR = 1  # This is the lowest value the MCL inflate factor is allowed to go to
 MCL_MAX_LOOP = 100          # MCL Max Loop
+
+
+def cluster_descriptions_from_file(datafile, should_print_output=False, print_series_sample_size=0):
+    """
+    The primary method of this package, which takes in a datafile and outputs the clustered
+    descriptions in a dictionary format.
+
+    :param: datafile - The path to the file that contains the pandas-readable data
+    :param: should_print_output - [Optional] True if output should be printed immediately after
+                                  calculation, False otherwises
+    :param: print_series_sample_size - The least number of samples a series must have to be printed.
+                                       For example, if print_series_sample_size is 5, then only
+                                       series with 5 or more samples will be printed
+
+    Returns a dictionary mapping a series_id to its final cluster
+    """
+
+    table = pd.read_table(datafile, index_col=0, low_memory=False)
+    all_series_ids = get_all_series_ids(table)
+
+    final_clusters_list = []
+    for series_id in all_series_ids:
+        sample_ids, all_sample_titles = get_all_sample_titles_for_series(table, series_id)
+        sample_abstract = get_abstract_for_series(table, series_id)
+        final_clusters = cluster_descriptions(all_sample_titles, sample_abstract)[0]
+        final_clusters_list.append(final_clusters)
+
+        # For printing purposes only
+        if should_print_output and len(all_sample_titles) >= print_series_sample_size:
+            print '-------------------------------------------------------------------------\n'
+            print 'SERIES: {0}'.format(series_id)
+            for cluster in final_clusters:
+                print cluster
+
+    return dict(zip(all_series_ids, final_clusters_list))
+
+
 
 def cluster_descriptions(data_description_text_list, abstract_text, data_description_ids=None):
     """
@@ -71,3 +110,8 @@ def cluster_descriptions(data_description_text_list, abstract_text, data_descrip
         labeled_clusters.add(tuple(current_cluster))
 
     return labeled_clusters, mtx
+
+
+if __name__ == '__main__':
+    print cluster_descriptions_from_file('../all_meta.txt', should_print_output=True,
+                                         print_series_sample_size=5)

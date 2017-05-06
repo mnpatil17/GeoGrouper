@@ -1,5 +1,4 @@
 import pandas as pd
-from geogrouper import cluster_descriptions
 
 #
 # Code to read the table
@@ -48,24 +47,4 @@ def get_all_series_ids(data_table):
     """
     Gets all the series in the table
     """
-    return table.loc['Series'].unique()
-
-
-if __name__ == '__main__':
-
-    table = pd.read_table('../all_meta.txt', index_col=0, low_memory=False)
-
-    for series_id in get_all_series_ids(table):
-        sample_ids, all_sample_titles = get_all_sample_titles_for_series(table, series_id)
-        sample_abstract = get_abstract_for_series(table, series_id)
-
-        if len(all_sample_titles) > 5:
-            print '-------------------------------------------------------------------------\n'
-            print 'SERIES: {0}'.format(series_id)
-            print 'NUM SAMPLES: {0}\n\n'.format(len(all_sample_titles))
-
-            groups = cluster_descriptions(all_sample_titles, sample_abstract)[0]
-            final_clusters = groups
-
-            for cluster in final_clusters:
-                print cluster
+    return data_table.loc['Series'].unique()
