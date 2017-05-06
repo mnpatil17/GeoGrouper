@@ -87,7 +87,7 @@ def cluster_descriptions(data_description_text_list, abstract_text, data_descrip
     # Execute MCL clustering
     inflate_factor = MCL_INFLATE_FACTOR
     num_clusters = len(data_description_text_list)
-    while num_clusters == len(data_description_text_list) or inflate_factor == 1:
+    while num_clusters == len(data_description_text_list) or inflate_factor == 2:
         M, clusters = mcl(mtx, inflate_factor=inflate_factor, max_loop=MCL_MAX_LOOP)
         num_clusters = len(clusters)
         inflate_factor -= 1
