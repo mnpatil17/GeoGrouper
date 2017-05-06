@@ -1,5 +1,5 @@
 # GeoGrouper
-Groups Geo data by clustering based on acronyms
+Groups Geo data by clustering based on keywords
 
 ### Modules
 
