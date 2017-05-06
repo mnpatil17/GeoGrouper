@@ -27,12 +27,18 @@ To cluster from a file:
 	clusters_for_each_series = cluster_descriptions_from_file(path_to_data_file)
 
 
-To cluster from a file AND **print** as you go:
+To cluster from a file AND **print** to terminal as you go:
 
 	from geogrouper import cluster_descriptions_from_file
-	clusters_for_each_series = cluster_descriptions_from_file(path_to_data_file)
+	clusters_for_each_series = cluster_descriptions_from_file(path_to_data_file, should_print_output=True)
 	
+
+To cluster from a file AND **print** to terminal only the series that have at least `N` samples:
+
+	from geogrouper import cluster_descriptions_from_file
+	clusters_for_each_series = cluster_descriptions_from_file(path_to_data_file, should_print_output=True, print_series_sample_size=N)
 	
+
 To cluster a list of sample descriptions with some additional description text (`abstract_text`):
 
 	from geogrouper import cluster_descriptions
