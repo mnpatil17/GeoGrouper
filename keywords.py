@@ -10,9 +10,9 @@
 #  1. get_acronyms
 #  2. get_common_words
 #
-# Please note that changing the way the main algorithm finds keywords will change the effectiveness
-# of the algorithm. Therefore, to iterate on this algorithm, changing the way keywords are found is
-# a great way to improve performance.
+# Please note that changing the way the main algorithm finds keywords will change the
+# effectiveness of the algorithm. Therefore, to iterate on this algorithm, changing the way
+# keywords are found is a great way to improve performance.
 #
 ####################################################################################################
 
