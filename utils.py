@@ -73,8 +73,8 @@ def scientific_match_ratio(str1, str2, keywords):
     str2_numberless = remove_numbers(str2)
 
     # Get the keywords and whatever remains after removing the keywords
-    str1_keywords, str1_remainder = get_keywords_in_description(str1_numberless, keywords)
-    str2_keywords, str2_remainder = get_keywords_in_description(str2_numberless, keywords)
+    str1_keywords, str1_remainder = get_common_words_in_description(str1_numberless, keywords)
+    str2_keywords, str2_remainder = get_common_words_in_description(str2_numberless, keywords)
 
     remainder_dist = string_num_matches(str1_remainder, str2_remainder)
     common_keywords = str1_keywords.intersection(str2_keywords)
@@ -86,7 +86,7 @@ def scientific_match_ratio(str1, str2, keywords):
     return (remainder_dist + common_keyword_total_len) * 1.0 / max(len(str1_numberless), len(str2_numberless))
 
 
-def get_keywords_in_description(text, keywords):
+def get_common_words_in_description(text, keywords):
     """
     """
     text_copy = str(text)

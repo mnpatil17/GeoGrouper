@@ -6,7 +6,7 @@ import re, string
 from utils import scientific_match_ratio, sanitize_sample_descriptions
 from itertools import combinations
 from python_mcl.mcl.mcl_clustering import mcl
-from acronyms import get_acronyms, get_keywords, get_acronyms
+from keywords import get_acronyms, get_common_words
 import numpy as np
 
 
