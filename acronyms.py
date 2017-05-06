@@ -3,26 +3,21 @@
 ###############
 
 import re, string, operator
-from utils import is_majority_uppercase, word_count, remove_numbers
+from utils import is_majority_uppercase, word_count, sanitize_sample_descriptions, sanitize_text
 
-MAX_ACRONYM_LENGTH = 2
+MIN_ACRONYM_LENGTH = 2   # The shortest an acronym can be
 
 #
 # Exposed Methods
 #
-
-def get_numberless_acronyms(abstract_text, data_description_text_list):
-    return [remove_numbers(acronym).strip() for acronym in get_acronyms(abstract_text,
-            data_description_text_list) if remove_numbers(acronym).strip() != '']
-
 
 def get_acronyms(abstract_text, data_description_text_list):
     """
     Given an abstract and a description list, this method finds all the relevant acronyms that are
     available in the description.
     """
-    potential_acronyms = get_potential_acronyms(abstract_text)
-    return get_valid_acronyms(potential_acronyms, data_description_text_list)
+    potential_acronyms = get_potential_acronyms(sanitize_text(abstract_text))
+    return list(get_valid_acronyms(potential_acronyms, data_description_text_list))
 
 
 def get_keywords(data_description_text_list):
@@ -30,9 +25,8 @@ def get_keywords(data_description_text_list):
     # Initial processing step to clean up the data. Does the following:
     # 1. Converts '_' characters to spaces
     # 2. Removes all numbers from the text
-    processed_description_text_list = []
-    for text in data_description_text_list:
-        processed_description_text_list.append(remove_numbers(text.replace('_', ' ')).strip())
+
+    processed_description_text_list = sanitize_sample_descriptions(data_description_text_list)
 
     all_text = ' '.join(processed_description_text_list)
     counts = word_count(all_text)
@@ -43,13 +37,12 @@ def get_keywords(data_description_text_list):
 # Helper Methods
 #
 
-
 def get_potential_acronyms(abstract_text):
     """
     This function returns a list of all the acronyms from the text of the abstract paragraph.
 
     A 'potential acronym' is defined as a majority uppercase string of length at least
-    MAX_ACRONYM_LENGTH
+    MIN_ACRONYM_LENGTH
 
     :param: abstract_text - The text of the abstract
     :return: a set of potential acronyms
@@ -67,7 +60,7 @@ def get_potential_acronyms(abstract_text):
     # deal with the rest of the words
     for word in all_abstract_text_words:
         striped_word = word.strip(string.punctuation)
-        if len(striped_word) > MAX_ACRONYM_LENGTH and is_majority_uppercase(striped_word):
+        if len(striped_word) > MIN_ACRONYM_LENGTH and is_majority_uppercase(striped_word):
             all_potential_acronyms.add(striped_word)
 
     return all_potential_acronyms

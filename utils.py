@@ -62,6 +62,7 @@ def string_match_ratio(str1, str2):
     sm = edit_distance.SequenceMatcher(a=str1, b=str2)
     return sm.ratio()
 
+
 def scientific_match_ratio(str1, str2, keywords):
     """
     Note the keywords may just be acronyms
@@ -71,6 +72,7 @@ def scientific_match_ratio(str1, str2, keywords):
     str1_numberless = remove_numbers(str1)
     str2_numberless = remove_numbers(str2)
 
+    # Get the keywords and whatever remains after removing the keywords
     str1_keywords, str1_remainder = get_keywords_in_description(str1_numberless, keywords)
     str2_keywords, str2_remainder = get_keywords_in_description(str2_numberless, keywords)
 
@@ -92,6 +94,7 @@ def get_keywords_in_description(text, keywords):
 
     if len(keywords) == 0:
         return set(), text_copy
+
     keywords.sort(key=len, reverse=True)
 
     for keyword in keywords:
@@ -103,6 +106,9 @@ def get_keywords_in_description(text, keywords):
 
 
 def word_count(input_str):
+    """
+    Returns a dictionary with an occurrence count for all the words in the input string.
+    """
     counts = dict()
     words = input_str.split()
     for word in words:
@@ -113,5 +119,33 @@ def word_count(input_str):
 
     return counts
 
+
 def remove_numbers(text):
+    """
+    Returns a copy of the input string without any numbers.
+    """
     return ''.join([i for i in text if not i.isdigit()])
+
+
+def sanitize_text(text):
+    """
+    Sanitizes the text by doing the following:
+
+    1. Removes numbers
+    2. Converts '_' to ' '
+    3. Strips leading and trailing spaces
+    """
+    return remove_numbers(text).replace('_', ' ').strip()
+
+
+def sanitize_sample_descriptions(sample_description_list, sanitize_fn=sanitize_text):
+    """
+    Sanitizes a list of descriptions using the specified sanitize_fn. Defaults to using
+    sanitize_text.
+    """
+    filtered_sample_desc_list = []
+    for text in sample_description_list:
+        filtered_sample_desc_list.append(sanitize_fn(text))
+
+    return filtered_sample_desc_list
+
