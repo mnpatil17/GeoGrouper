@@ -6,7 +6,7 @@ Groups Geo data by clustering based on acronyms
 1. `geo_id.py`: handles reading from a specified datatable
 2. `keywords.py`: has multiple methods for finding keywords for a series (not all are used)
 3. `geogrouper.py`: the primary file, which handles the clustering. `cluster_descriptions_from_file`
-					is the primary method
+					is the **primary method**
 4. `utils.py`: various utility functions
 
 
