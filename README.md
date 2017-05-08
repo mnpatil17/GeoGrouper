@@ -1,5 +1,5 @@
 # GeoGrouper
-Groups Geo data by clustering based on keywords
+Groups [GEO (Gene Expression Omnibus)](https://www.ncbi.nlm.nih.gov/geo/) samples based on the keywords that the sample descriptions share.
 
 ### Installation
 
